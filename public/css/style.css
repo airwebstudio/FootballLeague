@@ -1,0 +1,79 @@
+form {
+	
+}
+
+#page {
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
+
+#league_screen .top{
+	display: flex;
+	
+}
+
+
+#league {
+		width: 40%;
+		
+}
+
+#games {
+		width: 30%;
+		
+}
+
+#league, #games, #predicts {
+		
+		padding: 0 1% 1%;
+}
+
+#games, #predicts {
+	padding-top: 4%;
+}
+
+
+#league_table td, #league_table thead th {
+		text-align:center;
+}
+
+
+#input_added_teams > div{
+	padding: 3px;
+}
+
+
+#input_added_teams .remove_item::before {
+	
+	content: ' ';
+
+}
+
+#input_team {
+		margin-top: 10px;
+}
+
+#next_games {
+		width: 100%;
+		
+}
+
+#next_games > div {
+		display: flex;
+		justify-content: space-around;
+		
+		margin-top: 10px;
+		flex-wrap: wrap;
+		
+		
+}
+
+#next_games > div div {
+		padding: 20px;
+}
+
+
+.nowrp {
+		white-space: nowrap;
+}
