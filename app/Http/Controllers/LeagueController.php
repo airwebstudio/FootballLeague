@@ -14,13 +14,17 @@ class LeagueController {
 	
 	//up-table
 	public function upload_teams(Request $request) {
-			$teams = $request->only('teams')['teams'];
-			
-			if (!League::startNew($teams)) 
-				return response()->json('Validate Error', 400);
-			
-			
-			return response()->json('OK', 200);
+		
+		if (!$request->has('teams'))
+			return response()->json('Error', 503);
+		
+		$teams = $request->only('teams')['teams'];
+		
+		if (!League::startNew($teams)) 
+			return response()->json('Validate Error', 53);
+		
+		
+		return response()->json('OK', 200);
 	}
 	
 	

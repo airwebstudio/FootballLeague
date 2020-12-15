@@ -239,9 +239,9 @@ $(document).ready(function() {
 			//}
 			
 			
-			this.form.append(_form.gen_input({"type": "button", "value": "Add team", "class": "btn", "id": "add_team"}));
+			this.form.append(_form.gen_input({"type": "submit", "value": "Add team", "class": "btn", "id": "add_team"}));
 			
-			this.form.append(_form.gen_input({"type": "submit", "value": "Start League!", 'disabled': 'disabled', "id": "submit_teams", "class": "btn btn-primary"}));
+			this.form.append(_form.gen_input({"type": "button", "value": "Start League!", 'disabled': 'disabled', "id": "submit_teams", "class": "btn btn-primary"}));
 			this.form.append('<p>*Minimum 4 Teams</p>');
 			
 			//this.form.append(_form.gen_input({"type": "hidden", "value": token, 'name': '_token',  "class": "btn btn-primary", "id": "send_form"}));
@@ -252,11 +252,11 @@ $(document).ready(function() {
 			
 			
 			//EVENTS
-			$(this.form).on('submit', function(){
+			$(this.form).on('click', '#submit_teams', function(){
 				
 					let arr = [];
 					
-					let teams = $(this).find('[data-team]');
+					let teams = $(this).closest('form').find('[data-team]');
 					
 					if (teams.lenght < _vars.min_teams_count) {
 							alert('ERROR!');
@@ -279,7 +279,7 @@ $(document).ready(function() {
 					
 			});
 			
-			$(this.form).on('click', '#add_team', function() {
+			$(this.form).on('submit', function() {
 				
 				
 					let nm = $('#input_team').val();
