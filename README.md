@@ -2,6 +2,6 @@
 Frontend: Laravel 8, PHP 7
 Backend: JQuery 3
 
-Demo @: <a href="https://football-league.airwebstudio.com/">https://football-league.airwebstudio.com/</a>
+Demo @: <a target="_blank" href="https://football-league.airwebstudio.com/">https://football-league.airwebstudio.com/</a>
 
 Igor Lebedev, 2020
