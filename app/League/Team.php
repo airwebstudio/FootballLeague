@@ -1,5 +1,5 @@
-<?php
-//Class of Each Team in League. Params and Statistic
+<?php //Class of Each Team in League. Params and Statistic
+
 
 namespace App\League;
 
@@ -9,7 +9,6 @@ class Team {
 		
 	private $name;
 	private $index;
-	
 	
 	private $rate = 0;
 	private $chance = 100;
@@ -75,32 +74,18 @@ class Team {
 		
 		if ($this->matches_count == 0) return 0;
 		
-		$rate += $this->scores * 40;
-		
+		$rate += $this->scores * 40;		
 		$rate += ($this->wins - $this->matches_count) * 10; // wins to all matches
 		$rate += ($this->wins + $this->draws - $this->matches_count) * 5; // no looses to all matches
-		$rate += ($this->looses - $this->matches_count) * -10; // looses to all matches
-		
-		
-		$rate += ($this->home_looses) * (-10); // home looses matches
-		
-		
-		$rate += ($this->wins - $this->looses)*15; // wins to looses
-		
-		
-		$rate += ($this->wins + $this->draws - $this->looses)*5; // no looses to looses
-		
+		$rate += ($this->looses - $this->matches_count) * -10; // looses to all matches		
+		$rate += ($this->home_looses) * (-10); // home looses matches		
+		$rate += ($this->wins - $this->looses)*15; // wins to looses		
+		$rate += ($this->wins + $this->draws - $this->looses)*5; // no looses to looses		
 		$rate += $this->wins_in_row * 12; // wins in row
 		$rate += $this->no_looses_in_row * 10; // no looses in row
 		$rate += $this->guest_wins * 10; // guest wins in row
 		
 		$rate += ($this->goals_scored - $this->goals_conceded)*20;
-		
-		
-		
-		//$rate +=  ( Teams::get_tours_count() - $this->matches_count)*80;
-		
-		//$rate *=  ($this->matches_count / Teams::get_tours_count())*100;
 		
 		$rate = $rate / $this->matches_count;
 		

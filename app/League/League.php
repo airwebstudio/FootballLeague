@@ -8,18 +8,43 @@ class League {
 	
 	private static $lg;
 	
-	private $matches = Array();
-	private $tours = Array();
-	private $tours_list = Array();
-	private $teams = Array();
-	private $teams_names = Array();
+	
+	private $matches = Array();//played matches	
+	private $tours = Array();//played tours
+	private $tours_list = Array(); //tours list plan
+	
+	private $teams = Array(); //teams
+	private $teams_names = Array(); //tems names
 	
 	
+	//STATIC FUNCTIONS:	
 	
+	public static function startNew(array $teams):League {   //Start new League
+		
+			return self::$lg = new League($teams);	
+		
+	}	
 	
-
-	//Return TimeTable
-	public static function getToursList(array $teams):array {
+	public static function getCurrent() {   //Get current League from Session
+		return self::$lg = request()->session()->get('lg');				
+	}
+	
+	//Clear Team least
+	public static function clear($all = false) {
+		
+		if (!$all)
+			return self::$lg = new League(self::$lg->get_teams_names());
+		else {
+			
+			request()->session()->forget('lg');
+			throw new \Exception('New League', 503);
+			
+		}
+		 
+	}
+		
+	
+	public static function getToursList(array $teams):array { //Return TimeTable tours plans
 		
 		$matches = Array();
 		
@@ -70,8 +95,8 @@ class League {
 			
 	}
 	
-	//Getting match by params		
-	private static function PopMatch(array $used_teams = Array(), array &$matches) {
+		
+	private static function PopMatch(array $used_teams = Array(), array &$matches) { //Getting match by params	
 		
 		$_matches = $matches1 = $matches;
 		
@@ -95,9 +120,35 @@ class League {
 		
 		return false;
 	}
-
-	//getting sizeof of teams
-	public function get_teams_count():int {
+	
+	
+	//constructor
+	
+	private function __construct(array $teams) { 
+		
+		if (sizeof($teams) < 4) {
+			throw new \Exception('No teams or less than 4');	
+		}
+	
+		//$this->clear();
+		
+		$i = 0;	
+		foreach ($teams as $_team) {
+				$i++;				
+				$this->addTeam(new Team($_team, $i));
+		}
+		
+		$this->tours_list = League::getToursList($this->teams);		
+		$this->teams_names = $teams;
+		
+		$this->saveCurrent();
+		
+		
+	}
+	
+	//METHODS:
+	
+	public function get_teams_count():int { //getting sizeof of teams
 		return $this->teams ? sizeof($this->teams) : 0;
 	}
 	
@@ -106,23 +157,48 @@ class League {
 			return sizeof($this->teams )*2 - 2;
 	}
 	
-	
 	//add Team
 	public function addTeam(Team $team) {
 			
 			$this->teams[] = $team;
 	}
 	
-	
-	//Clear Team least
-	public function clear():void{
-		$this->teams  = array();
-		League::saveCurrent();
+	//Clear Team list
+	public function _clear($all = false):League {
+		unset($this->teams);
+		//$this->teams = Array();
 		
+		
+		if ($all) {
+			unset($this->teams_names);
+			$this->teams_names = array();
+			
+			unset($this->tours_list);
+			$this->tours_list = array();			
+		}
+		
+		
+		$i = 0;
+		foreach($this->teams_names as $t) {
+			$i++;
+			$this->teams[] = new Team($t, $i);			
+		}			
+		
+		//unset($this->tours);
+		$this->tours = array();		
+				
+		//$this->saveCurrent();
+		
+		return $this;
 	}
 	
 	
-	public function getTourTable() {
+	public function get_teams_names() {
+		return $this->teams_names;
+	}
+	
+	
+	public function getTourTable() { //League Table
 		
 		$data = [];
 		//preparing League Table
@@ -158,8 +234,22 @@ class League {
 			return $predicts;
 	}
 	
-	public function getLeagueStatus() {
-			//Status of league now
+	public function getRestTourList():array { //Next games
+		
+			$arr = [];
+			for ($i = sizeof($this->tours); $i < sizeof($this->tours_list); $i++) {
+				
+				foreach ($this->tours_list[$i] as $t) {
+					$arr[$i+1][] = Array('host' => $t['host']->get_name(), 
+										 'guest' => $t['guest']->get_name() );
+				}
+			}
+			
+			return $arr;
+	}
+	
+	public function getLeagueStatus() {  //Status of league now
+			
 		if ($this->ToursPlayed() == 0)
 			$status = 'new';
 		
@@ -174,13 +264,12 @@ class League {
 	}
 	
 	
-	public function getViewResults() {
+	public function getViewResults() { //get everything for view
 		
 		$results = Array();
 		
 		$results['tour_played'] = $this->ToursPlayed();
-		$results['tour_to_play'] = $this->ToursToPlay();
-		
+		$results['tour_to_play'] = $this->ToursToPlay();		
 		
 		$results['league_table'] = $this->getTourTable();		
 		$results['next_games'] = $this->getRestTourList();
@@ -193,83 +282,69 @@ class League {
 	}
 	
 	
-	//Get Team by index
-	public function get($ind):Team {
+	
+	public function get($ind):Team {   //Get Team by index
 			return $this->teams[$ind-1];
 	}
 	
-	//Calc Chances to for each team
-	private function rate_all() {
-		
-		if ($this->get_tours_count() == 0)
-			return false;
-		
-		
-		$rates = [];
-		
-		$i = 0;
-		
-		$base_rate = 100 / $this->get_teams_count();								
-		$tours_sizeof = self::get_tours_count();
-		
-		
-		foreach ($this->teams as $t) {
-			
-				if ($t->get_matches_count() == 0) {
-					$rates[] = $base_rate;
-				}
-					
-			
-				/*if ($i == 0) {
-						$lead_team = $t;
-				}*/				
-				//$lead_scores = $lead_team->get_scores();				
-				//$scores_rate = (((($t->get_scores())/($t->get_matches_sizeof())) - ($lead_scores/$lead_team->get_matches_sizeof())) * pow($t->get_matches_sizeof()/self::get_tours_sizeof(), 3)*120);
-				
-				
-				
-				$tour_i = pow($t->get_matches_count()/$tours_sizeof, 2);
-				
-				
-				$rates[] = $base_rate + ($t->calcPower()*$tour_i) ;
-				$i++;
-		}
+	
+	public function getLeagueTable():array { //get Teams
+			return $this->teams;
+	}	
+	
+	
+	public function saveCurrent() {  //Save current League to Session
+		return request()->session()->put('lg', $this);		
+	}
+	
+	
+	
+	public function get_teams_list():array { //get all teams
+			return $this->teams;
+	}
+	
+	
+	
+	public function nextWeek() { //Play next Tour
 		
 		
-		//TO %
+		$t = new Tour($this->tours_list[sizeof($this->tours)]);
 		
-		$min = min($rates);
-		$max = max($rates);
+		$matches = $t->getMatches();
+		$this->tours[] = $t;
+		$this->sortTable();
 		
-		if ($min <= 0) {
-				foreach ($rates as &$r) {
-						$r += -$min + 1;
-				}
-		}
+		$this->saveCurrent();
 		
 		
-		$sum = array_sum($rates);
-		foreach ($rates as &$r) {
-				$r = round(($r / $sum)*100, 2);
-				
-		}
-		
-		
-		$i = 0;
-		foreach ($this->teams as $t) {			
-				
-			$t->set_rate($rates[$i]);
-			$i++;
-		}
+		return $t;
 		
 	}
 	
 	
-	//Sort League table by achivments of every Team
-	
-	public function sortTable():bool {
+	public function getlastTour() { //Return a last Played Tour or NULL if League have't start yet		
 		
-			if (sizeof($this->teams) == 0) return false;
+		if (!isset($this->tours[sizeof($this->tours)-1]))
+		throw new \Exception('New League', 503);
+	
+		return  $this->tours[sizeof($this->tours)-1];
+		
+	}
+	
+	public function ToursPlayed():int { //sizeof of played games
+			return sizeof($this->tours);
+	}
+	
+	
+	public function ToursToPlay():int {	 //sizeof of games have to play	
+			return (sizeof($this->tours_list) - sizeof($this->tours)-1);
+	}
+	
+	
+	
+	public function sortTable():bool { //Sort League table by achivments of every Team
+		
+			//if (sizeof($this->teams) == 0) return false;
 			
 			usort($this->teams, function($t1, $t2){
 				
@@ -352,124 +427,58 @@ class League {
 			return true;
 	}
 	
-	//get Teams
-	public function getLeagueTable():array {
-			return $this->teams;
-	}
 	
-	
-	
-	
-	//Start new League
-	public static function startNew(array $teams):League {
-		//if (!isset(self::$lg)) {
-			self::$lg = new League($teams);	
-			self::saveCurrent();
-		//}
+	private function rate_all() {   //Calc Chances to for each team
 		
-		return self::$lg;
-	}
-	
-	
-	//Get current League from Session
-	public static function getCurrent() {
-		self::$lg = request()->session()->get('lg');		
+		if ($this->get_tours_count() == 0)
+			return false;
 		
 		
-		return self::$lg;
-	}
-	
-	
-	//Save current League to Session
-	public static function saveCurrent() {
-		return request()->session()->put('lg', self::$lg);
+		$rates = [];
 		
-	}
+		$i = 0;
 		
-	
-	private function __construct(array $teams) {
+		$base_rate = 100 / $this->get_teams_count();								
+		$tours_sizeof = self::get_tours_count();
 		
-		if (sizeof($teams) < 4) {
-			throw new Exception('No teams or less than 4');	
-		}
-	
-		//$this->clear();
 		
-		$i = 0;	
-		foreach ($teams as $_team) {
+		foreach ($this->teams as $t) {
 			
-				$i++;				
-				$this->addTeam(new Team($_team, $i));
-		}
-		
-		$this->tours_list = League::getToursList($this->teams);
-		//League::saveCurrent();
-		
-		
-		
-	}
-	//get all teams
-	public function get_teams_list():array {
-			return $this->teams;
-	}
-	
-	
-	//Play next Tour
-	public function nextWeek() {
-		
-		
-		$t = new Tour($this->tours_list[sizeof($this->tours)]);
-		
-		$matches = $t->getMatches();
-		$this->tours[] = $t;
-		
-		League::saveCurrent();
-		
-		//$this->matches = array_merge_recursive($this->matches, $matches);
-		
-		return $t;
-		
-	}
-	
-	
-	//Return a last Played Tour or NULL if League have't start yet
-	public function lastTour() {
-		
-		$res = $this->tours[sizeof($this->tours)-1] ?? null;
-		
-		if (isset($res))
-		self::$lg->sortTable();
-		
-		
-		return $res;	
-	}
-	
-	
-	//sizeof of played games
-	public function ToursPlayed():int {
-			return sizeof($this->tours);
-	}
-	
-	//sizeof of games have to play
-	public function ToursToPlay():int {
-		
-			return (sizeof($this->tours_list) - sizeof($this->tours)-1);
-	}
-	
-	
-	//Next games
-	public function getRestTourList():array {
-		
-			$arr = [];
-			for ($i = sizeof($this->tours); $i < sizeof($this->tours_list); $i++) {
-				
-				foreach ($this->tours_list[$i] as $t) {
-					$arr[$i+1][] = Array('host' => $t['host']->get_name(), 
-										 'guest' => $t['guest']->get_name() );
+				if ($t->get_matches_count() == 0) {
+					$rates[] = $base_rate;
 				}
-			}
-			
-			return $arr;
+				
+				$tour_i = pow($t->get_matches_count()/$tours_sizeof, 2);
+				
+				
+				$rates[] = $base_rate + ($t->calcPower()*$tour_i) ;
+				$i++;
+		}
+		
+		
+		//TO %		
+		$min = min($rates);
+		$max = max($rates);
+		
+		if ($min <= 0) {
+				foreach ($rates as &$r) {
+						$r += -$min + 1;
+				}
+		}
+		
+		$sum = array_sum($rates);
+		foreach ($rates as &$r) {
+				$r = round(($r / $sum)*100, 2);
+				
+		}
+		
+		$i = 0;
+		foreach ($this->teams as $t) {			
+				
+			$t->set_rate($rates[$i]);
+			$i++;
+		}
+		
 	}
 	
 }

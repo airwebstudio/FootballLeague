@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 
-//add MY NAMESPACE
+//add League namepace
 use \App\League\League;
 
 
@@ -19,57 +19,55 @@ class LeagueController {
 		$teams = $request->only('teams')['teams'];
 		
 		if (!League::startNew($teams)) 
-			return response()->json('Validate Error', 53);
-		
+			return response()->json('Validate Error', 503);		
 		
 		return response()->json('OK', 200);
 	}
+	
 	
 	
 	//get-table
 	public function get_table(Request $request) {
 		
 		try {
-			//getting current League
-			$lg = League::getCurrent();	
 			
-			//what is next action from front-end
-			$next = $request->get('next');
+			$next = $request->get('next');			
+			$lg = League::getCurrent();
 			
+			if (!isset($lg))
+				throw new \Exception('New League', 503);
 			
 			//case input action command
-			switch ($next) {
-		
-				case 'week': case 'all':
+			switch ($next) {	
+				
+					case 'reset': case 'reset_all': 
+						$lg = League::clear($next == 'reset_all');					
+						break;
+			
+					case 'all': case 'week':
 							
-							$tour = $lg->nextWeek();
-							//recursive repeat untill the League is over					
-							if (($next == 'all') && (!empty($t))) {
-									return $this->get_table($request);
+							if ($lg->toursToPlay() > 0) {
+								$tour = $lg->nextWeek();
+											
+								if ($next == 'all')  { //recursive repeat untill the League is over	
+										return $this->get_table($request);
+								}
+							}
+							else {
+								$tour = $lg->getLastTour();
 							}
 							
-							break;
-						
-				case 'reset': case  'reset_all': 
-							$teams = Array();
-							if (isset($lg) && ($next == 'reset')) {				
-								$teams = $lg->get_teams_list();
-							}			
-							
-							$lg = League::startNew($teams);
-							
-							break;
-				
-				
-				default:
-					$tour = $lg->lastTour();
+							break;				
+				default:		
+					
 						
 			}
-		
 			
-		} catch(\Throwable $e) {
-			//if Error! No teams
-			return response()->json(array('error' => $e->getMessage()), 503);
+			
+		} catch(\Throwable $e) { //if Error! No teams			
+			
+			$c = ($e->getCode() == 503) ? 503: 500;			
+			return response()->json(array('error' => $e->getMessage().$e->getLine()), $c);
 			
 		}
 		

@@ -1,5 +1,5 @@
-<?php
-//Class for save and manage Each Tour
+<?php //Class for save and manage Each Tour
+
 
 namespace App\League;
 

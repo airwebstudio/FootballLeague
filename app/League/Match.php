@@ -1,5 +1,4 @@
-<?php
-//Class for immitate playing match and keep information of it
+<?php //Class for immitate playing match and keep information of it
 
 namespace App\League;
 
@@ -40,29 +39,29 @@ class Match {
 			return ($team == $this->team1) ? 1 : 2;
 		}
 		
-		//Host team
-		public function getHost(): Team {
+		
+		public function getHost(): Team { //Host team
 			return $this->team1;
 		}
 		
 		
-		//Guest team
-		public function getGuest(): Team {
+		
+		public function getGuest(): Team { //Guest team
 			return $this->team2;
 		}
 		
-		//Host team scores
-		public function getScore1(): int {
+		
+		public function getScore1(): int { //Host team scores
 			return $this->score1;
 		}
 		
-		//Guest team scores
-		public function getScore2(): int {
+		
+		public function getScore2(): int { //Guest team scores
 			return $this->score2;
 		}
 		
-		//immitate playing a game
-		private function playGame():array {
+		
+		private function playGame():array { //immitate playing game
 			$t1 = $this->team1;
 			$t2 = $this->team2;
 			
