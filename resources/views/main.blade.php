@@ -36,13 +36,15 @@
 	<div id="page">
 	
 		<script src="js/index.js"></script>
+		
+		<h4 class="text-secondary">Github <a href="https://github.com/airwebstudio/FootballLeague" target="_blank">link</a> to repository of source codes</h4>
+		<hr/>
 	  
 		<div id="add_teams_container" data-page="add_teams" style="display:none">
-			<h2>ADD TEAMS TO FOOTBALL LEAGUE!</h2><p><b>Minimum 4 teams. </b> Each team should to have unique name!</p>
+			<h2>ADD TEAMS TO FOOTBALL LEAGUE!</h2><p><b>Minimum 4 teams. </b> Each team should have an unique name!</p>
 		</div>
 		
 		
-	  
 		<div id="league_screen" data-page="league" style="display:none">
 			
 			<div class="top">
@@ -129,6 +131,8 @@
 				</div>
 			</div>
 		</div>
+		
+		
   
   
 </body>

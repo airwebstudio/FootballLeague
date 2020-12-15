@@ -60,7 +60,7 @@ class Team {
 	
 	
 	//set chance
-	public function set_rate(int $rate) {
+	public function set_rate($rate) {
 		$this->rate = $rate;
 		
 	}
