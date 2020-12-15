@@ -26,7 +26,7 @@ class League {
 	
 	
 	//Get current League from Session
-	public static function getCurrent():League {
+	public static function getCurrent() {
 		self::$lg = request()->session()->get('lg');		
 		Teams::loadTeamsFromSession();
 		

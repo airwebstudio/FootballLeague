@@ -75,7 +75,7 @@ class Team {
 		
 		if ($this->matches_count == 0) return 0;
 		
-		$rate += $this->scores * 50;
+		$rate += $this->scores * 40;
 		
 		$rate += ($this->wins - $this->matches_count) * 10; // wins to all matches
 		$rate += ($this->wins + $this->draws - $this->matches_count) * 5; // no looses to all matches

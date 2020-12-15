@@ -67,7 +67,7 @@ class Match {
 			$t2 = $this->team2;
 			
 			//getting power of teams
-			$diff = round(($t1->calcPower()-$t2->calcPower())/100);
+			$diff = round(($t1->calcPower()-$t2->calcPower())/200);
 			
 			 if ($diff > 0 ) {
 					$diff_one = $diff;
@@ -80,8 +80,8 @@ class Match {
 			 }
 			
 			//power effect to game result
-			$this->score1 = rand(0,6) + rand(0, $diff_one);
-			$this->score2 = rand(0,6) + rand(0, $diff_two);
+			$this->score1 = rand(0,4) + rand(0, $diff_one);
+			$this->score2 = rand(0,4) + rand(0, $diff_two);
 			
 			$t1->addGame($this);
 			$t2->addGame($this);
