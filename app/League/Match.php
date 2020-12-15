@@ -18,7 +18,7 @@ class Match {
 		
 		//Getting result of game
 		public function getResult():array {
-			return Array('owner' => $this->score1, "guest" => $this->score2);
+			return Array('host' => $this->score1, "guest" => $this->score2);
 		}
 		
 		
@@ -28,7 +28,7 @@ class Match {
 			if (!in_array($team, Array($this->team1, $this->team2)))
 				return false;
 			
-			return ($team == $this->team1) ? 'owner' : 'guest';
+			return ($team == $this->team1) ? 'host' : 'guest';
 		}
 		
 		
@@ -41,13 +41,13 @@ class Match {
 		}
 		
 		//Host team
-		public function getTeam1(): Team {
+		public function getHost(): Team {
 			return $this->team1;
 		}
 		
 		
 		//Guest team
-		public function getTeam2(): Team {
+		public function getGuest(): Team {
 			return $this->team2;
 		}
 		

@@ -10,8 +10,10 @@ class Tour {
 	private $matches;
 	private $matches_by_team;
 	
+	
 	public function __construct(array $games) {
 		if (!empty($games)) {
+			
 			$this->games = $games;
 			$this->play();
 		}
@@ -20,7 +22,16 @@ class Tour {
 	
 	//get Matches of this Tour
 	public function getMatches() {
-			return $this->matches;
+			$games = [];			
+			foreach ($this->matches as $g) {
+					$games[] = Array('host' => $g->getTeam1()->get_name(), 'guest' => $g->getTeam2()->get_name(), 'score1' => $g->getScore1(),'score2' => $g->getScore2()) ;
+			}
+			
+			return $games;
+	}
+	
+	public function cancelTour() {
+		
 	}
 
 	
@@ -29,14 +40,15 @@ class Tour {
 	private function play():void {
 		
 		foreach($this->games as $g) {
-			$m = new Match(Teams::get($g['owner']), Teams::get($g['guest']));
-			$this->matches_by_team[$g['owner']][] = $m;
-			$this->matches_by_team[$g['guest']][] = $m;
+			$m = new Match($g['host']), $g['guest']);
+			
+			$this->matches_by_team[$g['host']->get_index()][] = $m;
+			$this->matches_by_team[$g['guest']->get_index()][] = $m;
 			
 			$this->matches[] = $m;
 		}
 		
-		Teams::sortTable();
+		//Teams::sortTable();
 		
 	}
 	
