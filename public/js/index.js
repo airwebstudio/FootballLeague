@@ -159,9 +159,9 @@ $(document).ready(function() {
 				
 				let new_row = $('<tr/>');
 				
-				new_row.append($('<td/>').append(d.team1));
+				new_row.append($('<td/>').append(d.host));
 				new_row.append($('<td/>').append('<b class="nowrp">' + d.score1 + ':' + d.score2 + '</b>'));
-				new_row.append($('<td/>').append(d.team2));
+				new_row.append($('<td/>').append(d.guest));
 				
 				
 				
@@ -204,7 +204,7 @@ $(document).ready(function() {
 				
 				for (i2 in data[i1]) {
 					
-					div.append('<p>' + data[i1][i2]['owner'] + ' - ' + data[i1][i2]['guest'] + '</p>');
+					div.append('<p>' + data[i1][i2]['host'] + ' - ' + data[i1][i2]['guest'] + '</p>');
 				}	
 
 				$('#next_games > div').append(div);

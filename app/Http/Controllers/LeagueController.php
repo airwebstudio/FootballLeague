@@ -1,6 +1,5 @@
 <?php
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 
 
@@ -29,7 +28,6 @@ class LeagueController {
 	
 	//get-table
 	public function get_table(Request $request) {
-		
 		
 		try {
 			//getting current League
@@ -63,14 +61,13 @@ class LeagueController {
 							break;
 				
 				
-				default:  $t = $lg->lastTour();
+				default:
+					$tour = $lg->lastTour();
 						
 			}
 		
 			
-		}
-		
-		catch(Exception $e) {
+		} catch(\Throwable $e) {
 			//if Error! No teams
 			return response()->json(array('error' => $e->getMessage()), 503);
 			
@@ -81,7 +78,7 @@ class LeagueController {
 		$results = $lg->getViewResults();
 		
 		if (isset($tour)) {
-			$results = $tour->getMatches();
+			$results['games_table'] = $tour->getMatches();
 		}
 			
 			

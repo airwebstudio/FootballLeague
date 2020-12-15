@@ -69,7 +69,7 @@ class Team {
 	
 	
 	//Calculate Team power by
-	public function calcPower():float {
+	public function calcPower() {
 		
 		$rate = 0;
 		
@@ -113,8 +113,8 @@ class Team {
 	//Add new game to the Team statistic
 	public function addGame(Match $match) {
 			
-			$t1 = $match->getTeam1();
-			$t2 = $match->getTeam2();
+			$t1 = $match->getHost();
+			$t2 = $match->getGuest();
 			
 			
 			if (!$status = $match->getTeamStatus($this))
@@ -126,8 +126,8 @@ class Team {
 				$my_score = $match->getScore2();
 				$opp_score = $match->getScore1();
 				
-				$me = $match->getTeam2();
-				$opp = $match->getTeam1();
+				$me = $t2;
+				$opp = $t1;
 				
 			}
 			else {
@@ -135,8 +135,8 @@ class Team {
 				$opp_score = $match->getScore2();
 				
 				
-				$me = $match->getTeam1();
-				$opp = $match->getTeam2();
+				$me = $t1;
+				$opp = $t2;
 			}
 				
 				//Save info to Table
