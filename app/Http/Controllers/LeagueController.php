@@ -11,29 +11,17 @@ class LeagueController {
 	
 	//up-table
 	public function upload_teams(Request $request, LeagueSimulation $league) {
-		
-		if (!$request->has('teams'))
-			return response()->json('Error', 503);
-		
-		$teams = $request->only('teams')['teams'];
-		
-		
-		if (!$league->startNew($teams)) 
-			return response()->json('Validate Error', 503);	
-
-		
+		$league->startNew($request->only('teams')['teams']);			
 		return $this->get_table($league);
 	}
 	
 	public function reset(LeagueSimulation $league) {
-		$league->clear();
-		
+		$league->clear();		
 		return $this->get_table($league);
 	}
 	
 	public function reset_all(LeagueSimulation $league) {
-		$league->clear(true);
-		
+		$league->clear(true);		
 		return $this->get_table($league);
 	}
 	
@@ -57,7 +45,7 @@ class LeagueController {
 	public function get_table(LeagueSimulation $league) {
 	
 			$lg = $league->getCurrent();
-			return response()->json($lg->getViewResults(), 200);
+			return response()->json($lg->getViewResults());
 		
 		
 	}
