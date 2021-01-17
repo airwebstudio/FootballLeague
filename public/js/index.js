@@ -1,18 +1,17 @@
-//Front end JS to communicate with Server. jQuery and ajax 
+//Front-end JS. jQuery and ajax 
 
 $(document).ready(function() {
 	//token for ajax request
 	var token = $('body').data('token');
 	
 	_server = {
-		getTable: function(next) {
+		getTable: function(act, data = {}) {
 			
+			data._token = token;
 			//getting info from server
-			$.post('/get-table', {'_token': token, 'next': next}, 'json')			
-						
+			$.post('/'+act, data, 'json')
 			.then(
 				function(data) {	
-					
 					
 					//show and hide different panels
 					if (data['league_status'] == 'new') {							
@@ -79,9 +78,7 @@ $(document).ready(function() {
 					
 					//open add teams form					
 					_table.gen_add_teams_form($(_vars.add_teams_container));
-										
-										
-					//
+					
 					_app.load('add_teams');
 					
 					
@@ -89,13 +86,8 @@ $(document).ready(function() {
 				}
 			}
 			);
-		},
-		//upload teams
-		sendTeams: function(data) {			
-			return $.ajax({url: '/up-teams', 'async': false, 'data': data, 'type': 'POST', 'dataType': 'json'});			
 		}
-		
-		
+	
 	}
 	
 	_app = {
@@ -268,12 +260,8 @@ $(document).ready(function() {
 					}
 					
 					
-					let data = _server.sendTeams({'teams': arr, '_token': token});
-					
-					if (data) {
-						_server.getTable('');
+					_server.getTable('up-teams', {'teams': arr});
 							
-					}
 					
 					return false;
 					
@@ -332,7 +320,7 @@ $(document).ready(function() {
 	}
 
 	//start app		
-	_server.getTable('');
+	_server.getTable('get-table');
 	
 	
 	
@@ -350,14 +338,11 @@ $(document).ready(function() {
 	});
 	
 	 $('body').on('click', '#reset_all', function(){
-			_server.getTable('reset_all');
+			_server.getTable('reset-all');
 	});
 	
 
 
-		
-	
-	
 	
 });
 

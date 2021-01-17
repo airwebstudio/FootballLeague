@@ -21,6 +21,10 @@ Route::get('/', function (){
 
 Route::post('/up-teams', [LeagueController::class, 'upload_teams']);
 Route::post('/get-table', [LeagueController::class, 'get_table']);
+Route::post('/week', [LeagueController::class, 'next_week']);
+Route::post('/all', [LeagueController::class, 'play_all']);
+Route::post('/reset', [LeagueController::class, 'reset']);
+Route::post('/reset-all', [LeagueController::class, 'reset_all']);
 
 Route::group(['middleware' => 'web'], function () {
 
